@@ -8,8 +8,10 @@
 var fs = require('fs');
 var express = require('express');
 var app = express();
+var axios = require('axios');
 
-const API_KEY = 'AIzaSyDaDXFoSfvksmKBJb_fqU5CPWMJz53BXtE';
+const API_KEY = '702db5e5b4454d1d89ca11d8768b0858';
+const ENDPOINT = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search';
 
 if (!process.env.DISABLE_XORIGIN) {
   app.use(function(req, res, next) {
@@ -36,9 +38,20 @@ app.route('/_api/package.json')
   });
 
 app.route('/')
-    .get(function(req, res) {
-		  res.sendFile(process.cwd() + '/views/index.html');
-    })
+  .get(function(req, res) {
+	  res.sendFile(process.cwd() + '/views/index.html');
+  });
+
+app.route('/search/:term')
+  .get(function (req, res) {
+    axios({
+      method: 'get',
+      url: `${ENDPOINT}?q=${req.params.term}`,
+      headers: {'Ocp-Apim-Subscription-Key': API_KEY}
+    }).then(function (result) {
+      res.send(result.data.value);
+    });
+  });
 
 // Respond not found to all the wrong routes
 app.use(function(req, res, next){
@@ -55,6 +68,6 @@ app.use(function(err, req, res, next) {
   }
 })
 
-app.listen(process.env.PORT, function () {
+app.listen(process.env.PORT || 3000, function () {
   console.log('Node.js listening ...');
 });
