@@ -49,7 +49,13 @@ app.route('/search/:term')
       url: `${ENDPOINT}?q=${req.params.term}`,
       headers: {'Ocp-Apim-Subscription-Key': API_KEY}
     }).then(function (result) {
-      res.send(result.data.value);
+      res.json(result.data.value.map(function (image) {
+        return {
+          alt: image.name,
+          imageUrl: image.contentUrl,
+          pageUrl: image.hostPageUrl
+        }
+      }));
     });
   });
 
