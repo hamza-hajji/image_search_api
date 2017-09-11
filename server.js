@@ -48,17 +48,19 @@ app.route('/search/:term')
   .get(function (req, res) {
     axios({
       method: 'get',
-      url: `${ENDPOINT}?q=${req.params.term}`,
+      url: `${ENDPOINT}?q=${req.params.term}&count=10&offset=${req.query.offset || 0}`,
       headers: {'Ocp-Apim-Subscription-Key': API_KEY}
     }).then(function (result) {
       searchTerms.push(req.params.term);
-      res.json(result.data.value.map(function (image) {
-        return {
-          alt: image.name,
-          imageUrl: image.contentUrl,
-          pageUrl: image.hostPageUrl
-        }
-      }));
+      res.json({
+        results: result.data.value.map(function (image) {
+          return {
+            alt: image.name,
+            imageUrl: image.contentUrl,
+            pageUrl: image.hostPageUrl
+          }
+        })
+      });
     }).catch(function (e) {
       res.status(400).send(e);
     });
