@@ -13,6 +13,8 @@ var axios = require('axios');
 const API_KEY = '702db5e5b4454d1d89ca11d8768b0858';
 const ENDPOINT = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search';
 
+var searchTerms = [];
+
 if (!process.env.DISABLE_XORIGIN) {
   app.use(function(req, res, next) {
     var allowedOrigins = ['https://narrow-plane.gomix.me', 'https://www.freecodecamp.com'];
@@ -49,6 +51,7 @@ app.route('/search/:term')
       url: `${ENDPOINT}?q=${req.params.term}`,
       headers: {'Ocp-Apim-Subscription-Key': API_KEY}
     }).then(function (result) {
+      searchTerms.push(req.params.term);
       res.json(result.data.value.map(function (image) {
         return {
           alt: image.name,
@@ -56,6 +59,15 @@ app.route('/search/:term')
           pageUrl: image.hostPageUrl
         }
       }));
+    }).catch(function (e) {
+      res.status(400).send(e);
+    });
+  });
+
+app.route('/latest')
+  .get(function (req, res) {
+    res.send({
+      "latest-search-terms": searchTerms
     });
   });
 
