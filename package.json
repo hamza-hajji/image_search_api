@@ -1,0 +1,17 @@
+{
+	"name": "",
+	"dependencies": {
+		"express": "^4.14.0"
+	},
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"engines": {
+		"node": "8.4.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": ""
+	}
+}
